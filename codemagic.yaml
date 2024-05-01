@@ -1,0 +1,27 @@
+workflows:
+  steadworth-ios-dev:
+    name: Dev Steadworth iOS App
+    instance_type: mac_mini_m1    
+    integrations:
+      app_store_connect: Steadworth
+    environment:
+      groups:
+        - MAPBOX_CREDENTIALS
+        - TEAM
+      ios_signing:
+        # distribution_type: app_store # or: app_store | ad_hoc | development | enterprise
+        distribution_type: app_store
+        bundle_identifier: 'com.steadworth'
+      vars:
+        BUNDLE_ID: 'com.steadworth'
+        XCODE_WORKSPACE: 'steadworth.xcworkspace'
+        XCODE_SCHEME: 'steadworth'
+        APP_ID: 6448956223
+      # ruby: 2.7.6
+    scripts:
+      - name: Increment build number
+        script: |
+          cd $CM_BUILD_DIR/ios
+          LATEST_BUILD_NUMBER=$(app-store-connect get-latest-app-store-build-number "$APP_ID")
+          agvtool new-version -all $(($LATEST_BUILD_NUMBER + 1))
+  
